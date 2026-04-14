@@ -1,3 +1,6 @@
+app:
+  pokemon:
+    max_limit_external: 1350
 spring:
   application:
     name: poke-api

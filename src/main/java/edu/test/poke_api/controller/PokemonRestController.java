@@ -4,6 +4,7 @@ package edu.test.poke_api.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.test.poke_api.Dto.PokemonDto;
+import edu.test.poke_api.Dto.PokemonQueriIn;
 import edu.test.poke_api.Dto.ProgressLoadDto;
 import edu.test.poke_api.entity.PokemonEntity;
 import edu.test.poke_api.services.PokeApiService;
@@ -29,14 +31,12 @@ public class PokemonRestController {
     private PokeLoaderService dataLoader;
     
     @GetMapping
-    public List<PokemonEntity> getAll() {
-        
-        return pokemonService.getAll();
-        
+    public ResponseEntity<List<PokemonEntity>> getAll(PokemonQueriIn filters) {
+        return ResponseEntity.ok(pokemonService.getAll(filters));
     }
 
     @GetMapping("/{Id}")
-    public PokemonEntity getOne(@PathVariable("Id") Integer Id) {
+    public PokemonEntity getOne(@PathVariable("Id") Long Id) {
         
         return pokemonService.getOneById(Id);
         
@@ -48,7 +48,7 @@ public class PokemonRestController {
     }
 
     @PatchMapping("/{Id}")
-    public PokemonEntity update(@PathVariable("Id") Integer Id, @RequestBody PokemonDto pokemon) {
+    public PokemonEntity update(@PathVariable("Id") Long Id, @RequestBody PokemonDto pokemon) {
         return pokemonService.update(Id, pokemon);
     }
 

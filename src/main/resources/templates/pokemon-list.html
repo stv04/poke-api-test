@@ -31,7 +31,7 @@
                 <td th:text="${p.name}" class="text-capitalize fw-bold"></td>
                 <td th:text="${p.height}"></td>
                 <td th:text="${p.weight}"></td>
-                <td th:text="${p.base_experience}"></td>
+                <td th:text="${p.baseExperience}"></td>
                 <td>
                     <a th:href="@{/edit/{id}(id=${p.id})}" class="btn btn-sm btn-warning">Editar</a>
                     <a th:href="@{/delete/{id}(id=${p.id})}" 

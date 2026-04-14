@@ -17,6 +17,7 @@
             <form th:action="@{/save}" th:object="${pokemon}" method="post">
                 <!-- Campo oculto para el ID si estamos editando -->
                 <input type="hidden" th:field="*{id}">
+                <input type="hidden" th:field="*{externalId}">
 
                 <div class="mb-3">
                     <label class="form-label">Nombre</label>
@@ -40,7 +41,7 @@
                 </div>
 
                 <div class="mb-3 form-check">
-                    <input type="checkbox" th:field="*{is_default}" class="form-check-input" id="defaultCheck">
+                    <input type="checkbox" th:field="*{isDefault}" class="form-check-input" id="defaultCheck">
                     <label class="form-check-label" for="defaultCheck">Es predeterminado</label>
                 </div>
 

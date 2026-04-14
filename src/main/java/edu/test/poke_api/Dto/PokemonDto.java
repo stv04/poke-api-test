@@ -4,10 +4,11 @@ import edu.test.poke_api.entity.PokemonEntity;
 import edu.test.poke_api.models.PokeRecord;
 
 public class PokemonDto {
-    public Integer id;
+    public Long id;
+    public Long externalId;
     public int height;
-    public int base_experience;
-    public boolean is_default;
+    public int baseExperience;
+    public boolean isDefault;
     public String name;
     public int order;
     public String imageUrl;
@@ -16,11 +17,11 @@ public class PokemonDto {
     PokemonDto() {}
 
     PokemonDto(PokeRecord record) {
-        this.id = record.id();
+        this.externalId = record.id();
         this.height = record.height();
-        this.base_experience = record.base_experience();
-        this.base_experience = record.base_experience();
-        this.is_default = record.is_default();
+        this.baseExperience = record.base_experience();
+        this.baseExperience = record.base_experience();
+        this.isDefault = record.is_default();
         this.name = record.name();
         this.order = record.order();
         this.imageUrl = record.sprites().front_default();
@@ -29,9 +30,10 @@ public class PokemonDto {
 
     public PokemonDto(PokemonEntity pokemom) {
         id = pokemom.id;
+        externalId = pokemom.externalId;
         height = pokemom.height;
-        base_experience = pokemom.base_experience;
-        is_default = pokemom.is_default;
+        baseExperience = pokemom.baseExperience;
+        isDefault = pokemom.isDefault;
         name = pokemom.name;
         imageUrl = pokemom.imageUrl;
         weight = pokemom.weight;

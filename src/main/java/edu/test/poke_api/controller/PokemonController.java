@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import edu.test.poke_api.Dto.PokemonDto;
+import edu.test.poke_api.Dto.PokemonQueriIn;
 import edu.test.poke_api.entity.PokemonEntity;
 import edu.test.poke_api.services.PokeApiService;
 
@@ -20,7 +21,7 @@ public class PokemonController {
 
     @GetMapping
     public String List(Model model) {
-        model.addAttribute("pokemons", pokemonService.getAll());
+        model.addAttribute("pokemons", pokemonService.getAll(new PokemonQueriIn()));
         return "pokemon-list";
     }
 
@@ -31,7 +32,7 @@ public class PokemonController {
     }
 
     @GetMapping("edit/{id}")
-    public String updatePokemon(@PathVariable Integer id, Model model) {
+    public String updatePokemon(@PathVariable Long id, Model model) {
         PokemonEntity pokemon = this.pokemonService.getOneById(id);
         model.addAttribute("pokemon", pokemon);
 
@@ -51,7 +52,7 @@ public class PokemonController {
     }
 
     @GetMapping("delete/{id}")
-    public String delete(@PathVariable Integer id) {
+    public String delete(@PathVariable Long id) {
         pokemonService.delete(id);
         return "redirect:/";
     }

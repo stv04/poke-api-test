@@ -1,7 +1,10 @@
 package edu.test.poke_api.services;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -17,7 +20,8 @@ import edu.test.poke_api.repository.PokemonRepository;
 public class PokeLoaderService {
     private int maxLoad = 65;
     private int batchUpdate = 10;
-    private int savingProgress = 0;
+    private long savingProgress = 0;
+    private int pokemonsPerMinute = 15; // Initial requirement 15 pokemon per minute
 
     @Autowired
     private PokemonRepository pokemonRepository;
@@ -27,33 +31,45 @@ public class PokeLoaderService {
 
     @Async
     public void loadAllPokemons() {
-        System.err.println("Iniciando proceso de carga en segundo plano");
+        System.out.println("Iniciando proceso de carga en segundo plano");
+        if( pokemonsPerMinute == 0 ) {
+            System.err.println("Hes been decide not load any pokemons per minute.");
+            return;
+        } 
+        ScheduledExecutorService sch = Executors.newSingleThreadScheduledExecutor();
 
-        List<PokemonEntity> pokemonList = new ArrayList<>();
 
-        for ( int i = 1; i <= maxLoad; i++ ) {
-            try {
-                PokeRecord originalPokemon = pokeApiClient.getOne(i);
-                PokemonEntity newPokemon = new PokemonEntity(originalPokemon);
-                pokemonList.add(newPokemon);
+        for ( long i = 1; i <= maxLoad; i++ ) {
+            final Long idPokemon = i;
+            sch.schedule(() -> {
+                try {
+                    LocalDateTime time = LocalDateTime.now();
+                    
+                    PokemonEntity existentPokemon = pokemonRepository.getOneByExternalId(idPokemon);
+                    
+                    if(existentPokemon == null || Duration.between(existentPokemon.createdAt, time).toHours() > 4) {
+                        if(existentPokemon != null )
+                            System.out.println("The duration: " + Duration.between(existentPokemon.createdAt, time).toHours());
+
+                        PokeRecord originalPokemon = pokeApiClient.getOne(idPokemon);
+                        PokemonEntity newPokemon = new PokemonEntity(originalPokemon);
+                        savingProgress = idPokemon;
+                        pokemonRepository.save(newPokemon);
+                    } else {
+                        System.out.println("Pokemon already exists");
+                    }
+
+                    if( idPokemon % batchUpdate == 0 ) {
+                        System.err.println(String.format("%d records have been processed", idPokemon));
+                    }
     
-                if( i % batchUpdate == 0 ) {
-                    this.pokemonRepository.saveAll(pokemonList);
-                    pokemonList.clear();
-                    savingProgress = i;
-                    System.err.println(String.format("%d records have been saved", i));
+                } catch (Exception e) {
+                    System.err.println(String.format("Error Saving Records in ID (%d): %s", idPokemon, e.getMessage()));
                 }
-
-            } catch (Exception e) {
-                pokemonList.clear();
-                System.err.println(String.format("Error Saving Records in ID (%d): %s", i, e.getMessage()));
-            }
+            }, i * 60 / pokemonsPerMinute, TimeUnit.SECONDS);
         }
 
-        pokemonRepository.saveAll(pokemonList);
-        pokemonList.clear();
         savingProgress = maxLoad;
-        System.err.println("Batch update finished!");
 
     }
 

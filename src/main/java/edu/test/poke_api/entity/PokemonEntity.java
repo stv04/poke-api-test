@@ -1,7 +1,10 @@
 package edu.test.poke_api.entity;
 
+import java.time.LocalDateTime;
+
 import edu.test.poke_api.Dto.PokemonDto;
 import edu.test.poke_api.models.PokeRecord;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,48 +17,59 @@ public class PokemonEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pokemon_seq")
     @SequenceGenerator(
         name = "pokemon_seq",
-        sequenceName = "pokemon_sequence"
-
+        sequenceName = "pokemon_sequence",
+        initialValue = 1351
     )
-    public Integer id;
+    public Long id;
 
-    public Integer external_id;
+    @Column(unique = true)
+    public Long externalId;
 
     public int height;
-    public int base_experience;
-    public boolean is_default;
+    public int baseExperience;
+    public boolean isDefault;
     public String name;
     public String imageUrl;
     public int weight;
+    public LocalDateTime createdAt = LocalDateTime.now();
 
     public PokemonEntity() {}
 
     public PokemonEntity(PokemonDto pokemom) {
-        external_id = pokemom.id;
+        id = pokemom.id;
+        externalId = pokemom.externalId;
         height = pokemom.height;
-        base_experience = pokemom.base_experience;
-        is_default = pokemom.is_default;
+        baseExperience = pokemom.baseExperience;
+        isDefault = pokemom.isDefault;
         name = pokemom.name;
         imageUrl = pokemom.imageUrl;
         weight = pokemom.weight;
     }
 
     public PokemonEntity(PokeRecord pokemom) {
-        external_id = pokemom.id();
+        externalId = pokemom.id();
         height = pokemom.height();
-        base_experience = pokemom.base_experience();
-        is_default = pokemom.is_default();
+        baseExperience = pokemom.base_experience();
+        isDefault = pokemom.is_default();
         name = pokemom.name();
         imageUrl = pokemom.sprites().front_default();
         weight = pokemom.weight();
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
     
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(Long externalId) {
+        this.externalId = externalId;
     }
 
     public int getHeight() {
@@ -66,20 +80,20 @@ public class PokemonEntity {
         this.height = height;
     }
 
-    public int getBase_experience() {
-        return base_experience;
+    public int getBaseExperience() {
+        return baseExperience;
     }
 
-    public void setBase_experience(int base_experience) {
-        this.base_experience = base_experience;
+    public void setBaseExperience(int baseExperience) {
+        this.baseExperience = baseExperience;
     }
 
-    public boolean isIs_default() {
-        return is_default;
+    public boolean getIsDefault() {
+        return this.isDefault;
     }
 
-    public void setIs_default(boolean is_default) {
-        this.is_default = is_default;
+    public void isDefault(boolean isDefault) {
+        this.isDefault = isDefault;
     }
 
     public String getName() {
@@ -105,5 +119,4 @@ public class PokemonEntity {
     public void setWeight(int weight) {
         this.weight = weight;
     }
-
 }
